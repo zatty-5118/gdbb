@@ -1,0 +1,9 @@
+footer{
+    background: linear-gradient(135deg, cl(cl-MH), cl(cl-RH) 50%);
+    padding: rem(16);
+
+    p{
+        color: cl(cl-white);
+        text-align: end;
+    }
+}

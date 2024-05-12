@@ -1,0 +1,128 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import { BASE_URL } from '../../../scripts/modules/baseURL';
+import { responseBlog,notionBlog,array__allArticleData } from '../../../scripts/api/notionBlog.js';
+import { array__allSeries } from '../../../scripts/modules/array__allSeries.js';
+import { array__allBrand } from '../../../scripts/modules/array__allBrand.js';
+import { NotionToMarkdown } from "notion-to-md";
+import rehypeStringify from 'rehype-stringify';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import { unified } from 'unified';
+import remarkUnwrapImages from 'remark-unwrap-images';
+import remarkGfm from 'remark-gfm'
+import '../../../styles/articlePage.scss';
+
+export async function getStaticPaths() {
+    array__allArticleData.filter((article) => {
+        return array__allSeries.filter((value) => {
+            if(article.series === value.series){
+                return article["seriesSlug"] = value.seriesSlug;
+            }
+        });
+    });
+
+    array__allArticleData.filter((article) => {
+        return array__allBrand.filter((value) => {
+            if(article.brand === value.brand){
+                article["brandSlug"] = value.brandSlug;
+            }
+        })
+    })
+
+    return array__allArticleData.map((elem) => ({
+        params: {slug: elem.slug},
+        props: {
+            response: responseBlog,
+            notion: notionBlog,
+            id: elem.id,
+            title: elem.title,
+            thumbnail: elem.thumbnail,
+            date: elem.date,
+            series_ja: elem.series,
+            series_slug: elem.seriesSlug,
+            published: elem.published,
+            description: elem.description,
+            brand: elem.brand,
+            brand_slug: elem.brandSlug
+        }
+    }))
+}
+
+const { slug } = Astro.params;
+const { response,notion,id,title,thumbnail,date,series_ja,series_slug,published,description,brand,brand_slug } = Astro.props;
+
+const n2m = new NotionToMarkdown({ notionClient: notion });
+
+const mdblocks = await n2m.pageToMarkdown(id);
+const mdString = n2m.toMarkdownString(mdblocks);
+const processor = unified();
+processor.use(remarkUnwrapImages);
+processor.use(remarkRehype);
+processor.use(remarkGfm);
+processor.use(rehypeStringify);
+processor.use(remarkParse, { fragment: true });
+
+const html = await processor.process(mdString.parent);
+
+const hierarchies = [
+    {
+        position : 2,
+        itemName: `${title}`,
+        itemPath: `${BASE_URL}/article/view/${slug}`
+    },
+
+];
+
+const lists = [
+    { 
+        name: `${title}`,
+        path: `${BASE_URL}/article/view/${slug}`
+    },
+];
+
+---
+
+<Layout 
+    title=`${title} | zatty's Blog`
+    description={description}
+    url=`${BASE_URL}/article/view/${slug}`
+    hierarchies={hierarchies}
+    lists={lists}
+>
+    <main>
+        <article>
+            <section id="mainView">
+                <section class="top">
+                    <div class="image">
+                        <Image src={thumbnail} alt={title} width={360} height={240}>
+                    </div>
+                    <div class="title">
+                        <h1>{title}</h1>
+                    </div>    
+                </section>
+                <section class="info">
+                    <div class="date">
+                        <time datetime={date} itemprop="datePublished">{`${new Date(date).getFullYear()}.${('0'+(new Date(date).getMonth()+1)).slice(-2)}.${('0'+(new Date(date).getDate())).slice(-2)}`}</time>
+                    </div>
+                    <div class="category">
+                        <div id={series_slug} class="series">
+                            <a href=`${BASE_URL}/article/series/${series_slug}/page=1`>{series_ja}</a>
+                        </div>
+                        <div class="brand">
+                            <a href=`${BASE_URL}/article/brand/${brand_slug}/page=1`>{brand}</a>
+                        </div>    
+                    </div>
+                </section>
+            </section>
+            <section id="mainContent">
+                {html}
+            </section>        
+        </article>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" is:inline></script>
+    <script is:inline>
+        hljs.initHighlightingOnLoad();
+    </script>	
+</Layout>

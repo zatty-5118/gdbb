@@ -1,0 +1,97 @@
+.mainImg{
+    img{
+        max-width: 440px;
+        max-height: 220px;
+        aspect-ratio: 16/9;
+        margin:  0 auto;
+    }
+}
+
+.title{
+    h1{
+        margin: rem(16) 0;
+    }
+}
+
+.articleList{
+    ul{
+        display: grid;
+        grid-template-columns: repeat(1,1fr);
+        gap: rem(32);
+        padding-bottom: rem(64);
+
+        @include responsive(md){
+            grid-template-columns: repeat(2,1fr);
+        }
+
+        @include responsive(lg){
+            grid-template-columns: repeat(3,1fr);
+        }
+
+        li{
+            border-bottom: 2px dashed cl(cl-RH);
+            border-bottom: 2px dashed;
+            border-image: linear-gradient(to right, cl(cl-RH) 0%, cl(cl-MH) 50%, cl(cl-RC) 75%, cl(cl-KYA) 100%);
+            border-image-slice: 1;
+
+            padding-bottom: rem(16);
+
+            a{
+                display: flex;
+                flex-direction: column;
+                gap: rem(8);
+                
+                @include hover{
+                    .image{
+                        img{
+                            transform: scale(1.1);
+                            transition: 0.3s all;
+                        }
+                    }
+                }
+            }
+
+            .image{
+                overflow: hidden;
+                img{
+                    aspect-ratio: 16/9;
+                    transition: 0.3s all;
+                }
+            }
+
+            .text{
+                display: flex;
+                flex-direction: column;
+                gap: rem(8);
+
+                .title{
+                    min-height: 52px;
+                    h2{
+                        font-size: rem(18);
+                    }    
+                }
+
+                p{
+                    font-size: rem(12);
+                    color: #7f7f7f;
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
+                    overflow: hidden;    
+                }
+                time{
+                    font-size: rem(12);
+                    display: flex;
+                    justify-content: flex-end;
+    
+                    @include responsive(md){
+                        font-size: rem(14);
+                    }
+            
+                }    
+            }
+            
+        }
+
+    }
+}

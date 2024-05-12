@@ -1,0 +1,197 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { BASE_URL } from '../scripts/modules/baseURL.js';
+import { array__allArticleData } from '../scripts/api/notionBlog.js';
+import { array__allSeries } from '../scripts/modules/array__allSeries.js';
+import { array__allBrand } from '../scripts/modules/array__allBrand.js';
+import { Image } from 'astro:assets';
+import { Picture } from 'astro-imagetools/components';
+import '../styles/topPage.scss';
+
+const publishedArticle = array__allArticleData.filter((value) => {
+  return value.published;
+});
+
+const favoriteArticle = array__allArticleData.filter((value) => {
+  return value.published && value.favorite;
+});
+
+const filter__seriesUc = array__allSeries.filter((value) => {
+  return value.century === "uc"
+});
+
+const filter__seriesAnother = array__allSeries.filter((value) => {
+  return value.century === "another"
+});
+
+const filter__seriesOther = array__allSeries.filter((value) => {
+  return value.century === ""
+});
+
+
+const hierarchies = [];
+
+const lists = [];
+---
+
+<Layout
+	url=`${BASE_URL}/`
+	title="Gunpla Data Base Blog | ガンプラデータベースブログ"
+	description="ガンプラデータベースブログ"
+	hierarchies={hierarchies}
+	lists={lists}
+>
+	<main>
+		<section class="mainView">
+			<div class="mainView_image">
+				<Picture
+				src="/public/images/mainView/mainView_sp.png"
+				alt="zatty's Blog トップ画像"
+				loading="null"
+				decoding="null"
+				placeholder="none"
+				artDirectives={[
+					{
+						media: '(min-width: 768px)',
+						src: "/public/images/mainView/mainView_pc.png",
+					},
+				]}
+			  />
+			</div>
+		</section>
+		<section class="newArticle">
+			<div class="inner">
+				<h2>新着ガンプラ</h2>
+				<ul>
+					{publishedArticle.map((article) =>
+						<li>
+							<a href={`${BASE_URL}/article/view/${article.slug}`}>
+								<div class="image">
+									<Image src={article.thumbnail} alt={article.title} width={950} height={600}/>
+								</div>
+								<div class="text">
+									<div class="title">
+										<h3>{article.title}</h3>
+									</div>
+									<div class="description">
+										<p>{article.description}</p>
+									</div>
+									<div class="date">
+                                        <time datetime={article.date}>{`${new Date(article.date).getFullYear()}.${('0'+(new Date(article.date).getMonth()+1)).slice(-2)}.${('0'+(new Date(article.date).getDate())).slice(-2)}`}</time>
+                                    </div>
+								</div>
+							</a>
+						</li>
+					)}
+				</ul>
+				<div class="link">
+					<a href=`${BASE_URL}/article/list/page=1`>もっと見る</a>
+				</div>
+			</div>
+		</section>
+		<section class="favoriteArticle">
+			<div class="inner">
+				<h2>お気に入りガンプラ</h2>
+				<ul>
+					{favoriteArticle.map((article) =>
+						<li>
+							<a href={`${BASE_URL}/article/view/${article.slug}`}>
+								<div class="image">
+									<Image src={article.thumbnail} alt={article.title} width={950} height={600}/>
+								</div>
+								<div class="text">
+									<div class="title">
+										<h3>{article.title}</h3>
+									</div>
+									<div class="description">
+										<p>{article.description}</p>
+									</div>
+									<div class="date">
+                                        <time datetime={article.date}>{`${new Date(article.date).getFullYear()}.${('0'+(new Date(article.date).getMonth()+1)).slice(-2)}.${('0'+(new Date(article.date).getDate())).slice(-2)}`}</time>
+                                    </div>
+								</div>
+							</a>
+						</li>
+					)}
+				</ul>
+			</div>
+		</section>
+		<section class="seriesList">
+			<div class="inner">
+				<h2>シリーズから探す</h2>
+				<div class="list">
+					<h3>宇宙世紀シリーズ</h3>
+					<ul>
+						{filter__seriesUc.map((value) =>
+							<li class={value.seriesSlug}>
+								<a href={`${BASE_URL}/article/series/${value.seriesSlug}/page=1`}>
+									<div class="image">
+										<img src={`../../public/images/series/${value.seriesSlug}.jpg`} alt={value.seriesJa} width={300} height={170} />
+									</div>
+									<div class="title">
+										<p>{value.seriesJa}</p>
+									</div>
+								</a>
+							</li>
+						)}
+					</ul>
+				</div>	
+				<div class="list">
+					<h3>アナザーシリーズ</h3>
+					<ul>
+						{filter__seriesAnother.map((value) =>
+							<li class={value.seriesSlug}>
+								<a href={`${BASE_URL}/article/series/${value.seriesSlug}/page=1`}>
+									<div class="image">
+										<img src={`../../public/images/series/${value.seriesSlug}.jpg`} alt={value.seriesJa} width={300} height={170} />
+									</div>
+									<div class="title">
+										<p>{value.seriesJa}</p>
+									</div>
+								</a>
+							</li>
+						)}
+					</ul>
+				</div>
+				<div class="list">
+					<h3>その他</h3>
+					<ul>
+						{filter__seriesOther.map((value) =>
+							<li class={value.seriesSlug}>
+								<a href={`${BASE_URL}/article/series/${value.seriesSlug}/page=1`}>
+									<div class="image">
+										<img src={`../../public/images/series/${value.seriesSlug}.jpg`} alt={value.seriesJa} width={300} height={170} />
+									</div>
+									<div class="title">
+										<p>{value.seriesJa}</p>
+									</div>
+								</a>
+							</li>
+						)}
+					</ul>
+				</div>
+			</div>
+		</section>
+		<section class="brandList">
+			<div class="inner">
+				<h2>ブランドから探す</h2>
+				<div class="brandList">
+					<ul>
+						{array__allBrand.map((value) => 
+							<li>
+								<a href={`${BASE_URL}/article/brand/${value.brandSlug}/page=1`}>
+									<div class="image">
+										<img src={`../../public/images/brand/${value.brandSlug}.jpg`} alt={value.brand} width={800} height={600} />
+									</div>
+									<div class="text">
+										<p>{value.brand}</p>
+									</div>
+								</a>
+							</li>
+						)}
+					</ul>
+				</div>
+			</div>
+		</section>
+	</main>
+</Layout>
