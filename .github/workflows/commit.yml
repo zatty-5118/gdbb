@@ -1,4 +1,4 @@
-name: Extend CI
+name: Auto Commit
 
 on:
   schedule:
