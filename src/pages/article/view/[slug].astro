@@ -6,12 +6,15 @@ import { responseBlog,notionBlog,array__allArticleData } from '../../../scripts/
 import { array__allSeries } from '../../../scripts/modules/array__allSeries.js';
 import { array__allBrand } from '../../../scripts/modules/array__allBrand.js';
 import { NotionToMarkdown } from "notion-to-md";
+import { unified } from 'unified';
+import { JSDOM } from "jsdom";
 import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
-import { unified } from 'unified';
 import remarkUnwrapImages from 'remark-unwrap-images';
-import remarkGfm from 'remark-gfm'
+import rehypeFigure from "@microflash/rehype-figure";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 import '../../../styles/articlePage.scss';
 
 export async function getStaticPaths() {
@@ -58,13 +61,88 @@ const n2m = new NotionToMarkdown({ notionClient: notion });
 const mdblocks = await n2m.pageToMarkdown(id);
 const mdString = n2m.toMarkdownString(mdblocks);
 const processor = unified();
+processor.use(remarkParse, { fragment: true });
+processor.use(remarkGfm);
 processor.use(remarkUnwrapImages);
 processor.use(remarkRehype);
-processor.use(remarkGfm);
+processor.use(rehypeRaw);
+processor.use(rehypeFigure);
 processor.use(rehypeStringify);
-processor.use(remarkParse, { fragment: true });
 
-const html = await processor.process(mdString.parent);
+let html = String(await processor.process(mdString.parent));
+
+const dom = new JSDOM(html);
+const document = dom.window.document;
+const figures = Array.from(document.querySelectorAll("figure"));
+let imageGroup = [];
+figures.forEach((figure, index) => {
+    const prev = figures[index - 1];
+    const next = figures[index + 1];
+    if (!prev || prev.nextElementSibling !== figure) {
+        imageGroup = [figure];
+    } else {
+        imageGroup.push(figure);
+    }
+
+    if (!next || figure.nextElementSibling !== next) {
+        if (imageGroup.length > 1) {
+            const div = document.createElement("div");
+            div.className = "image-wrapper";
+            imageGroup.forEach(fig => div.appendChild(fig.cloneNode(true)));
+            imageGroup[0].parentNode.replaceChild(div, imageGroup[0]);
+            imageGroup.slice(1).forEach(fig => fig.remove());
+        }
+    }
+});
+
+const headings = [...document.querySelectorAll("h2")];
+if (headings.length > 0) {
+    const firstH2 = headings[0];
+
+    const introSection = document.createElement("section");
+    introSection.classList.add("introduction");
+    let nextElem = document.body.firstChild;
+
+    while (nextElem && nextElem !== firstH2) {
+        const moveElem = nextElem;
+        nextElem = nextElem.nextSibling;
+        introSection.appendChild(moveElem);
+    }
+
+    document.body.insertBefore(introSection, firstH2);
+}
+headings.forEach((h2) => {
+    const section = document.createElement("section");
+    section.classList.add("topic");
+    h2.parentNode.insertBefore(section, h2);
+    section.appendChild(h2);
+
+    let nextElem = section.nextSibling;
+
+    while (nextElem && !(nextElem.tagName && nextElem.tagName.toLowerCase() === "h2")) {
+        const moveElem = nextElem;
+        nextElem = nextElem.nextSibling;
+        section.appendChild(moveElem);
+    }
+});
+html = dom.serialize();
+
+html = html.replace(/<table>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>[\s\S]*?<\/table>/g, match => {
+    return match
+        .replace(/<thead>[\s\S]*?<\/thead>/g, '')
+        .replace(/<tr>(.*?)<\/tr>/g, (_, tr) => {
+            const cells = tr.match(/<td[^>]*>(.*?)<\/td>/g);
+            if (cells && cells.length >= 2) {
+                const dt = cells[0].replace(/<\/?td[^>]*>/g, '').trim();
+                const dd = cells.slice(1).map(td => td.replace(/<\/?td[^>]*>/g, '').trim()).join(', ');
+                return `<dt>${dt}</dt><dd>${dd}</dd>`;
+            }
+            return '';
+        })
+        .replace(/<table>|<\/table>|<tbody>|<\/tbody>/g, '')
+        .trim();
+});
+html = html.replace(/(<dt>.*?<\/dt><dd>.*?<\/dd>)/g, '<dl>$1</dl>');
 
 const hierarchies = [
     {
@@ -116,9 +194,7 @@ const lists = [
                     </div>
                 </section>
             </section>
-            <section id="mainContent">
-                {html}
-            </section>        
+            <section id="mainContent" set:html={html}></section>
         </article>
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" is:inline></script>
