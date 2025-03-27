@@ -21,8 +21,8 @@
     "highlight.js": "^11.9.0",
     "jsdom": "^26.0.0",
     "notion-to-md": "^3.1.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "rehype-figure": "^1.0.1",
     "rehype-raw": "^7.0.0",
     "rehype-stringify": "^10.0.0",
@@ -30,6 +30,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.0",
     "remark-unwrap-images": "^4.0.0",
+    "swiper": "^11.2.6",
     "unified": "^11.0.4"
   },
   "devDependencies": {

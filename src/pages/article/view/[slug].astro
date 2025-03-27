@@ -66,34 +66,12 @@ processor.use(remarkGfm);
 processor.use(remarkUnwrapImages);
 processor.use(remarkRehype);
 processor.use(rehypeRaw);
-processor.use(rehypeFigure);
 processor.use(rehypeStringify);
 
 let html = String(await processor.process(mdString.parent));
 
 const dom = new JSDOM(html);
 const document = dom.window.document;
-const figures = Array.from(document.querySelectorAll("figure"));
-let imageGroup = [];
-figures.forEach((figure, index) => {
-    const prev = figures[index - 1];
-    const next = figures[index + 1];
-    if (!prev || prev.nextElementSibling !== figure) {
-        imageGroup = [figure];
-    } else {
-        imageGroup.push(figure);
-    }
-
-    if (!next || figure.nextElementSibling !== next) {
-        if (imageGroup.length > 1) {
-            const div = document.createElement("div");
-            div.className = "image-wrapper";
-            imageGroup.forEach(fig => div.appendChild(fig.cloneNode(true)));
-            imageGroup[0].parentNode.replaceChild(div, imageGroup[0]);
-            imageGroup.slice(1).forEach(fig => fig.remove());
-        }
-    }
-});
 
 const headings = [...document.querySelectorAll("h2")];
 if (headings.length > 0) {
@@ -114,9 +92,11 @@ if (headings.length > 0) {
 headings.forEach((h2) => {
     const section = document.createElement("section");
     section.classList.add("topic");
+    if(h2.textContent === "フォトギャラリー"){
+        section.setAttribute("id","gallery");
+    }
     h2.parentNode.insertBefore(section, h2);
     section.appendChild(h2);
-
     let nextElem = section.nextSibling;
 
     while (nextElem && !(nextElem.tagName && nextElem.tagName.toLowerCase() === "h2")) {
@@ -125,6 +105,7 @@ headings.forEach((h2) => {
         section.appendChild(moveElem);
     }
 });
+
 html = dom.serialize();
 
 html = html.replace(/<table>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>[\s\S]*?<\/table>/g, match => {
@@ -195,10 +176,12 @@ const lists = [
                 </section>
             </section>
             <section id="mainContent" set:html={html}></section>
+            <!-- <div>
+                <dl>
+                    <dt>画像の引用元：</dt>
+                    <dd><a href="https://bandai-hobby.net/" target="_blank">https://bandai-hobby.net/</a></dd>
+                </dl>
+            </div> -->
         </article>
     </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" is:inline></script>
-    <script is:inline>
-        hljs.initHighlightingOnLoad();
-    </script>	
 </Layout>

@@ -1,3 +1,8 @@
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+
+
 article{
     padding-bottom: rem(72);
     h1{
@@ -187,15 +192,12 @@ article{
                 padding: 5px;
                 width: calc(100% - 150px);
                 border-bottom: 1px solid #ccc;
-            }
-        }
 
-        .image-wrapper{
-            display: grid;
-            grid-template-columns: repeat(1,1fr);
-            @include responsive(md){
-                gap: rem(16);
-                grid-template-columns: repeat(2,1fr);
+                a{
+                    color: cl(cl-RH);
+                    text-decoration: underline;
+                    display: inline;
+                }
             }
         }
 
@@ -203,20 +205,6 @@ article{
             aspect-ratio: 16/9;
             border-radius: 5px;
             margin: rem(8) 0;
-        }
-
-        figure{
-            margin: rem(8) 0;
-
-            img{
-                aspect-ratio: 16/9;    
-            }
-
-            figcaption{
-                margin-top: rem(4);
-                color: #888;
-                font-size: rem(12);
-            }
         }
 
         ul{
@@ -236,41 +224,59 @@ article{
             }
         }
 
-        table{                    
-            thead{
-                tr{
-                    th{
-                        font-weight: 400;
-                        text-align: start;
-            
-                        &:first-child{
-                            width: 30%;
-                        }
+        #gallery{
+            .swiper{
+                .swiper-slide{
+                    img{
+                        width: 100%;
+                        height: auto;
+                        border-radius: 0;    
+                        aspect-ratio: 1/1;
+                        margin: 0;
                     }
                 }
             }
+              
+            .main-swiper{
+                margin-bottom: rem(32);
+                .swiper-slide{
+                    width: 100% !important;
+                    max-height: 600px;
+                    height: auto;
+                }
 
-            tbody{
-                tr{
-                    margin: rem(4) 0;
-                    &:first-child{
-                        border-top: 1px solid #ccc;
+            }
+      
+            .thumbnail-swiper{
+                .swiper-wrapper{
+                    display: flex;
+                    @include responsive(md){
+                        display: grid;
+                        gap: rem(8);
+                        grid-template-columns: repeat(5,1fr);
+                    }        
+                }
+                .swiper-slide {
+                    // width: calc(100% / 5) !important;
+                    // height: auto;
+                    // // max-width: 70px;
+                    // // max-height: 70px;
+                    @include responsive(md){
+                        width: 100% !important;
+                        max-width: 136px;
+                        max-height: 136px;    
                     }
-                    th{
-                        &:first-child{
-                            width: 30%;
-                        }
+                    img{
+                        border: 2px solid #33333300;
+                    }       
+                }
+                .swiper-slide-thumb-active {
+                    img{
+                        border: 2px solid cl(cl-MH);
                     }
                 }
             }
-        }
-
-        table,
-        table th,
-        table td {
-            border: 1px solid #ccc;
-            border-collapse: collapse;
-            padding: rem(4);
+              
         }
     }
 }
