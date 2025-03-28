@@ -15,7 +15,9 @@ import remarkUnwrapImages from 'remark-unwrap-images';
 import rehypeFigure from "@microflash/rehype-figure";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+// import Swiper from 'swiper';
 import '../../../styles/articlePage.scss';
+import 'swiper/swiper-bundle.css';
 
 export async function getStaticPaths() {
     array__allArticleData.filter((article) => {
@@ -57,7 +59,6 @@ const { slug } = Astro.params;
 const { response,notion,id,title,thumbnail,date,series_ja,series_slug,published,description,brand,brand_slug } = Astro.props;
 
 const n2m = new NotionToMarkdown({ notionClient: notion });
-
 const mdblocks = await n2m.pageToMarkdown(id);
 const mdString = n2m.toMarkdownString(mdblocks);
 const processor = unified();
@@ -140,7 +141,6 @@ const lists = [
         path: `${BASE_URL}/article/view/${slug}`
     },
 ];
-
 ---
 
 <Layout 
@@ -176,12 +176,6 @@ const lists = [
                 </section>
             </section>
             <section id="mainContent" set:html={html}></section>
-            <!-- <div>
-                <dl>
-                    <dt>画像の引用元：</dt>
-                    <dd><a href="https://bandai-hobby.net/" target="_blank">https://bandai-hobby.net/</a></dd>
-                </dl>
-            </div> -->
         </article>
     </main>
 </Layout>
