@@ -1,0 +1,48 @@
+.relatedArticle{
+    width: 90%;
+    margin: 0 auto;
+    margin-top: rem(48);
+
+    @include responsive(md){
+        max-width: 680px;
+    }
+
+    h2{
+        margin-bottom: rem(16);
+    }
+
+    .article-swiper{
+        article{
+            a{
+                overflow: hidden;
+                box-shadow: 0 3px 10px rgba(0,0,0,.2);
+                border-radius: 10px;    
+            }
+
+            .thumbnail{
+                img{
+                    border-radius: 10px 10px 0 0;
+                }    
+            }
+
+            .title{
+                background-color: cl(cl-white);
+                padding: rem(16);
+                border-radius: 0 0 10px 10px;
+
+                h3{
+                    font-size: rem(16);
+                    @include responsive(md){
+                        font-size: rem(18);
+                    }                
+                    min-height: 52px;
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
+                    overflow: hidden;        
+                }
+            }    
+        }
+    }
+
+}

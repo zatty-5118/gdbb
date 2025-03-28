@@ -8,6 +8,8 @@ import { array__allBrand } from '../../../scripts/modules/array__allBrand.js';
 import { NotionToMarkdown } from "notion-to-md";
 import { unified } from 'unified';
 import { JSDOM } from "jsdom";
+import SwiperGallery from '../../../components/modules/SwiperGallery.jsx';
+import RelatedArticle from '../../../components/modules/RelatedArticle.astro';
 import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
@@ -15,9 +17,7 @@ import remarkUnwrapImages from 'remark-unwrap-images';
 import rehypeFigure from "@microflash/rehype-figure";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-// import Swiper from 'swiper';
 import '../../../styles/articlePage.scss';
-import 'swiper/swiper-bundle.css';
 
 export async function getStaticPaths() {
     array__allArticleData.filter((article) => {
@@ -60,71 +60,166 @@ const { response,notion,id,title,thumbnail,date,series_ja,series_slug,published,
 
 const n2m = new NotionToMarkdown({ notionClient: notion });
 const mdblocks = await n2m.pageToMarkdown(id);
-const mdString = n2m.toMarkdownString(mdblocks);
-const processor = unified();
-processor.use(remarkParse, { fragment: true });
-processor.use(remarkGfm);
-processor.use(remarkUnwrapImages);
-processor.use(remarkRehype);
-processor.use(rehypeRaw);
-processor.use(rehypeStringify);
-
-let html = String(await processor.process(mdString.parent));
-
-const dom = new JSDOM(html);
-const document = dom.window.document;
-
-const headings = [...document.querySelectorAll("h2")];
-if (headings.length > 0) {
-    const firstH2 = headings[0];
-
-    const introSection = document.createElement("section");
-    introSection.classList.add("introduction");
-    let nextElem = document.body.firstChild;
-
-    while (nextElem && nextElem !== firstH2) {
-        const moveElem = nextElem;
-        nextElem = nextElem.nextSibling;
-        introSection.appendChild(moveElem);
+let array_sections = [];
+let currentSection = { title: "", blocks: [] };
+mdblocks.forEach(block => {
+    if (block.type === 'heading_2') {
+        if (currentSection.blocks.length > 0) {
+            array_sections.push(currentSection);
+        }
+        currentSection = { title: block.text, blocks: [block] };
+    } else {
+        currentSection.blocks.push(block);
     }
-
-    document.body.insertBefore(introSection, firstH2);
+});
+if (currentSection.blocks.length > 0) {
+    array_sections.push(currentSection);
 }
-headings.forEach((h2) => {
-    const section = document.createElement("section");
-    section.classList.add("topic");
-    if(h2.textContent === "フォトギャラリー"){
-        section.setAttribute("id","gallery");
-    }
-    h2.parentNode.insertBefore(section, h2);
-    section.appendChild(h2);
-    let nextElem = section.nextSibling;
 
-    while (nextElem && !(nextElem.tagName && nextElem.tagName.toLowerCase() === "h2")) {
-        const moveElem = nextElem;
-        nextElem = nextElem.nextSibling;
-        section.appendChild(moveElem);
+async function convertMarkdownToHtml(markdown) {
+    const processor = unified();
+    processor.use(remarkParse, { fragment: true });
+    processor.use(remarkGfm);
+    processor.use(remarkUnwrapImages);
+    processor.use(remarkRehype);
+    processor.use(rehypeRaw);
+    processor.use(rehypeStringify);
+    const result = await processor.process(markdown);
+    return String(result);
+}
+async function convertTableToDl(htmlContent) {
+    return htmlContent.replace(/<table>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>[\s\S]*?<\/table>/g, match => {
+        return match
+            .replace(/<thead>[\s\S]*?<\/thead>/g, '')
+            .replace(/<tr>(.*?)<\/tr>/g, (_, tr) => {
+                const cells = tr.match(/<td[^>]*>(.*?)<\/td>/g);
+                if (cells && cells.length >= 2) {
+                    const dt = cells[0].replace(/<\/?td[^>]*>/g, '').trim();
+                    const dd = cells.slice(1).map(td => td.replace(/<\/?td[^>]*>/g, '').trim()).join(', ');
+                    return `<dt>${dt}</dt><dd>${dd}</dd>`;
+                }
+                return '';
+            })
+            .replace(/<table>|<\/table>|<tbody>|<\/tbody>/g, '')
+            .trim();
+    }).replace(/(<dt>.*?<\/dt><dd>.*?<\/dd>)/g, '<dl>$1</dl>');
+};
+function extractImageUrls(markdown) {
+    const regex = /!\[.*?\]\((.*?)\)/g;
+    const urls = [];
+    let match;
+
+    while ((match = regex.exec(markdown)) !== null) {
+        urls.push(match[1]);
+    }
+
+    return urls;
+};
+const htmlSections = await Promise.all(
+    array_sections.map(async (section) => {
+        const markdownContent = section.blocks.map(b => b.parent).join("\n");
+        const convertHtml = await convertMarkdownToHtml(markdownContent);
+        const htmlContent = await convertTableToDl(convertHtml);
+        return { title: section.title, content: htmlContent };
+    })
+);
+const separateSections = htmlSections.slice(0,4);
+
+const section_gallery = [];
+array_sections.forEach(block => {
+    if(block.blocks[0].type == "heading_2" && block.blocks[0].parent.includes("フォトギャラリー")){
+        section_gallery.push(block);
     }
 });
 
-html = dom.serialize();
+let sectionTitleGallery
+const sectionImageGallery = [];
 
-html = html.replace(/<table>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>[\s\S]*?<\/table>/g, match => {
-    return match
-        .replace(/<thead>[\s\S]*?<\/thead>/g, '')
-        .replace(/<tr>(.*?)<\/tr>/g, (_, tr) => {
-            const cells = tr.match(/<td[^>]*>(.*?)<\/td>/g);
-            if (cells && cells.length >= 2) {
-                const dt = cells[0].replace(/<\/?td[^>]*>/g, '').trim();
-                const dd = cells.slice(1).map(td => td.replace(/<\/?td[^>]*>/g, '').trim()).join(', ');
-                return `<dt>${dt}</dt><dd>${dd}</dd>`;
-            }
-            return '';
-        })
-        .replace(/<table>|<\/table>|<tbody>|<\/tbody>/g, '')
-        .trim();
-});
-html = html.replace(/(<dt>.*?<\/dt><dd>.*?<\/dd>)/g, '<dl>$1</dl>');
+await Promise.all(
+    section_gallery[0].blocks.map(async elem => {
+        if(elem.type == "heading_2"){
+            sectionTitleGallery = await convertMarkdownToHtml(elem.parent);
+            return sectionTitleGallery
+        }else if(elem.type == "image"){
+            sectionImageGallery.push(extractImageUrls(elem.parent));
+            return sectionImageGallery
+        }
+    })
+
+);
+const images = sectionImageGallery.flat();
+
+
+
+
+
+
+
+// const mdString = n2m.toMarkdownString(mdblocks);
+// const processor = unified();
+// processor.use(remarkParse, { fragment: true });
+// processor.use(remarkGfm);
+// processor.use(remarkUnwrapImages);
+// processor.use(remarkRehype);
+// processor.use(rehypeRaw);
+// processor.use(rehypeStringify);
+
+// let html = String(await processor.process(mdString.parent));
+
+// const dom = new JSDOM(html);
+// const document = dom.window.document;
+
+// const headings = [...document.querySelectorAll("h2")];
+// if (headings.length > 0) {
+//     const firstH2 = headings[0];
+
+//     const introSection = document.createElement("section");
+//     introSection.classList.add("introduction");
+//     let nextElem = document.body.firstChild;
+
+//     while (nextElem && nextElem !== firstH2) {
+//         const moveElem = nextElem;
+//         nextElem = nextElem.nextSibling;
+//         introSection.appendChild(moveElem);
+//     }
+
+//     document.body.insertBefore(introSection, firstH2);
+// }
+// headings.forEach((h2) => {
+//     const section = document.createElement("section");
+//     section.classList.add("topic");
+//     if(h2.textContent === "フォトギャラリー"){
+//         section.setAttribute("id","gallery");
+//     }
+//     h2.parentNode.insertBefore(section, h2);
+//     section.appendChild(h2);
+//     let nextElem = section.nextSibling;
+
+//     while (nextElem && !(nextElem.tagName && nextElem.tagName.toLowerCase() === "h2")) {
+//         const moveElem = nextElem;
+//         nextElem = nextElem.nextSibling;
+//         section.appendChild(moveElem);
+//     }
+// });
+
+// html = dom.serialize();
+
+// html = html.replace(/<table>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>[\s\S]*?<\/table>/g, match => {
+//     return match
+//         .replace(/<thead>[\s\S]*?<\/thead>/g, '')
+//         .replace(/<tr>(.*?)<\/tr>/g, (_, tr) => {
+//             const cells = tr.match(/<td[^>]*>(.*?)<\/td>/g);
+//             if (cells && cells.length >= 2) {
+//                 const dt = cells[0].replace(/<\/?td[^>]*>/g, '').trim();
+//                 const dd = cells.slice(1).map(td => td.replace(/<\/?td[^>]*>/g, '').trim()).join(', ');
+//                 return `<dt>${dt}</dt><dd>${dd}</dd>`;
+//             }
+//             return '';
+//         })
+//         .replace(/<table>|<\/table>|<tbody>|<\/tbody>/g, '')
+//         .trim();
+// });
+// html = html.replace(/(<dt>.*?<\/dt><dd>.*?<\/dd>)/g, '<dl>$1</dl>');
 
 const hierarchies = [
     {
@@ -175,7 +270,20 @@ const lists = [
                     </div>
                 </section>
             </section>
-            <section id="mainContent" set:html={html}></section>
+            <!-- <section id="mainContent" set:html={html}></section> -->
+            <section id="mainContent">
+                {separateSections.map((section) => (
+                    <section class="topics" set:html={section.content}></section>
+                ))}    
+                <section class="topics" id="gallery">
+                    <div set:html={sectionTitleGallery}></div>
+                    <SwiperGallery images={images} client:load/>
+                </section>
+                <section>
+                    <p>画像の引用元</p>
+                </section>
+            </section>
         </article>
+        <RelatedArticle title={title} thumbnail={thumbnail} series={series_slug} date={date} />
     </main>
 </Layout>
