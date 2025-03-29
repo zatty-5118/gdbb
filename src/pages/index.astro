@@ -10,11 +10,11 @@ import '../styles/topPage.scss';
 
 const publishedArticle = array__allArticleData.filter((value) => {
   return value.published;
-});
+}).slice(0,6);
 
 const favoriteArticle = array__allArticleData.filter((value) => {
   return value.published && value.favorite;
-});
+}).slice(0,6);;
 
 const filter__seriesUc = array__allSeries.filter((value) => {
   return value.century === "uc"

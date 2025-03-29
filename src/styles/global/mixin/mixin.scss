@@ -9,7 +9,8 @@ $baseFontsize: 16;
 $colors: (
   cl-black: #333333,
   cl-white: #ffffff,
-  cl-gray: #f2f2f2,  
+  cl-gray: #f2f2f2,
+  cl-gray2: #ccc, 
   cl-RH: #9B265F,
   cl-MH: #CC3C56,
   cl-RC: #FE9B96,
@@ -75,11 +76,19 @@ $breakpoints: (
 
 }
 
+// @mixin hover {
+//   @media (hover: hover) {
+//     &:hover{
+//       @content;
+//       transition: 0.3s;
+//     }
+//   }
+// }
 @mixin hover {
-  @media (hover: hover) {
-    &:hover{
+  @include responsive(md) {
+    &:hover {
       @content;
-      transition: 0.3s;
+      transition: 0.3s all;
     }
   }
 }

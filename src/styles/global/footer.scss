@@ -2,6 +2,18 @@ footer{
     background: linear-gradient(135deg, cl(cl-MH), cl(cl-RH) 50%);
     padding: rem(16);
 
+    .quotation{
+        margin-top: rem(16);
+        display: flex;
+        justify-content: flex-end;
+        font-size: rem(10);
+        a{
+            width: inherit;
+            color: cl(cl-white);
+            text-decoration: underline;
+        }
+    }
+
     p{
         color: cl(cl-white);
         text-align: end;

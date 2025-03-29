@@ -25,6 +25,7 @@
     display: flex;
     align-items: center;
     gap: rem(8);
+    overflow-x: auto;
 
     li{
       &:first-of-type{
@@ -38,10 +39,8 @@
       }
 
       span{
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 1;
-        overflow: hidden;
+        word-break: keep-all;
+        white-space: nowrap;
       }
 
       &:not(:last-of-type){

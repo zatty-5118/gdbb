@@ -1,6 +1,5 @@
 article{
     h1{
-        text-align: center;
         margin: rem(16) 0;
     }
 
@@ -16,13 +15,18 @@ article{
                     max-height: 500px;
                     margin: 0 auto;    
                     border-radius: 0;
+                    aspect-ratio: 16/9;
                 }        
             }
             .title{
-                width: 90%;
-                margin: 0 auto;    
+                // width: 90%;
+                // margin: 0 auto;
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 padding: 0 rem(4);
                 @include responsive(md){
+                    margin: 0 auto;
                     max-width: 680px;
                 }    
             }    
@@ -57,11 +61,19 @@ article{
                         font-size: rem(14);
                         cursor: pointer;
                         color: cl(cl-white);
-                        background: linear-gradient(135deg, cl(cl-RH), cl(cl-MH));
+                        background-image: linear-gradient(to right, cl(cl-RH) 12%, cl(cl-MH) 62.666667%);
+                        background-size: 150% auto;
+                        background-position: 0% 50%;
+                        transition: 0.3s 
+                        background-position ease-out;            
                         padding: rem(8);
                         border-radius: 50px;
                         display: flex;
                         justify-content: center;
+                        @include hover{
+                            background-position: 100% 50%;
+                            opacity: 1;
+                        }            
                     }
                 }
     
@@ -73,11 +85,19 @@ article{
                         font-size: rem(14);
                         cursor: pointer;
                         color: cl(cl-white);
-                        background: linear-gradient(135deg, cl(cl-RC), cl(cl-KYA));
+                        background-image: linear-gradient(to right, cl(cl-RC) 12%, cl(cl-KYA) 62.666667%);
+                        background-size: 150% auto;
+                        background-position: 0% 50%;
+                        transition: 0.3s 
+                        background-position ease-out;            
                         padding: rem(8);
                         border-radius: 50px;
                         display: flex;
                         justify-content: center;
+                        @include hover{
+                            background-position: 100% 50%;
+                            opacity: 1;
+                        }            
                     }
                 }    
             }
@@ -166,31 +186,32 @@ article{
             flex-wrap: wrap;
             align-items: stretch;	
             width: 100%;
-            border-left: 1px solid #ccc;
-            border-right: 1px solid #ccc;
+            border-left: 1px solid cl(cl-gray2);
+            border-right: 1px solid cl(cl-gray2);
 
             &:first-of-type{
-                border-top: 1px solid #ccc;
+                border-top: 1px solid cl(cl-gray2);
             }
 
             dt{
-                background: #f5f5f5;
+                background: cl(cl-gray);
                 padding: 5px;
                 width: 150px;
-                border-right: 1px solid #ccc;
-                border-bottom: 1px solid #ccc;
+                border-right: 1px solid cl(cl-gray2);
+                border-bottom: 1px solid cl(cl-gray2);
             }
 
             dd{
                 background: #fff;
                 padding: 5px;
                 width: calc(100% - 150px);
-                border-bottom: 1px solid #ccc;
+                border-bottom: 1px solid cl(cl-gray2);
 
                 a{
                     color: cl(cl-RH);
                     text-decoration: underline;
                     display: inline;
+                    word-wrap:break-word;
                 }
             }
         }
@@ -241,6 +262,59 @@ article{
 
             }
       
+            .swiper-container{
+                position: relative;
+                .swiper-button-next,
+                .swiper-button-prev{
+                    width: 30px;
+                    height: 30px;
+                    @include responsive(md){
+                        width: 50px;
+                        height: 50px;
+                    }
+
+                    &::after{
+                        background-repeat: no-repeat;
+                        background-size: contain;
+                        content: "";
+                        width: 30px;
+                        height: 30px;
+                        @include responsive(md){
+                            width: 50px;
+                            height: 50px;
+                        }    
+                    }
+                }
+                .swiper-button-next{
+                    right: -3%;
+                    @include responsive(md){
+                        right: 3%;
+                    }        
+
+                    &::after{
+                        background-image: url("../../public/images/allow-right.svg");
+                    }
+                }
+                .swiper-button-prev{
+                    left: -3%;
+                    @include responsive(md){
+                        left: 3%;
+                    }        
+
+                    &::after{
+                        background-image: url("../../public/images/allow-left.svg");
+                    }
+                }
+
+                .swiper-scrollbar {
+                    bottom: -10px;
+                    width: 100%;
+                    height: 4px;
+                }
+                .swiper-scrollbar-drag {
+                    background-color: cl(cl-MH);
+                }
+            }
             .thumbnail-swiper{
                 .swiper-wrapper{
                     display: flex;

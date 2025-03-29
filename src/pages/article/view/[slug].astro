@@ -87,23 +87,39 @@ async function convertMarkdownToHtml(markdown) {
     const result = await processor.process(markdown);
     return String(result);
 }
-async function convertTableToDl(htmlContent) {
-    return htmlContent.replace(/<table>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>[\s\S]*?<\/table>/g, match => {
-        return match
-            .replace(/<thead>[\s\S]*?<\/thead>/g, '')
-            .replace(/<tr>(.*?)<\/tr>/g, (_, tr) => {
-                const cells = tr.match(/<td[^>]*>(.*?)<\/td>/g);
-                if (cells && cells.length >= 2) {
-                    const dt = cells[0].replace(/<\/?td[^>]*>/g, '').trim();
-                    const dd = cells.slice(1).map(td => td.replace(/<\/?td[^>]*>/g, '').trim()).join(', ');
-                    return `<dt>${dt}</dt><dd>${dd}</dd>`;
-                }
-                return '';
-            })
-            .replace(/<table>|<\/table>|<tbody>|<\/tbody>/g, '')
-            .trim();
-    }).replace(/(<dt>.*?<\/dt><dd>.*?<\/dd>)/g, '<dl>$1</dl>');
-};
+
+async function convertMarkdown(htmlContent) {
+  const htmlWithLinks = htmlContent.replace(/<a href="([^"]+)">/g, (match, url) => {
+    return `<a href="${url}" target="_blank">`;
+  });
+  const convertedTable = htmlWithLinks.replace(/<table>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>[\s\S]*?<\/table>/g, match => {
+    return match
+      .replace(/<thead>[\s\S]*?<\/thead>/g, '')
+      .replace(/<tr>(.*?)<\/tr>/g, (_, tr) => {
+        const cells = tr.match(/<td[^>]*>(.*?)<\/td>/g);
+        if (cells && cells.length >= 2) {
+          const dt = cells[0].replace(/<\/?td[^>]*>/g, '').trim();
+          const dd = cells.slice(1).map(td => td.replace(/<\/?td[^>]*>/g, '').trim()).join(', ');
+          return `<dt>${dt}</dt><dd>${dd}</dd>`;
+        }
+        return '';
+      })
+      .replace(/<table>|<\/table>|<tbody>|<\/tbody>/g, '')
+      .trim();
+  }).replace(/(<dt>.*?<\/dt><dd>.*?<\/dd>)/g, '<dl>$1</dl>');
+
+  return convertedTable;
+}
+const htmlSections = await Promise.all(
+    array_sections.map(async (section) => {
+        const markdownContent = section.blocks.map(b => b.parent).join("\n");
+        const htmlContent = await convertMarkdownToHtml(markdownContent);
+        const finalHtmlContent = await convertMarkdown(htmlContent);
+        return { title: section.title, content: finalHtmlContent };
+    })
+);
+const separateSections = htmlSections.slice(0,4);
+
 function extractImageUrls(markdown) {
     const regex = /!\[.*?\]\((.*?)\)/g;
     const urls = [];
@@ -115,16 +131,6 @@ function extractImageUrls(markdown) {
 
     return urls;
 };
-const htmlSections = await Promise.all(
-    array_sections.map(async (section) => {
-        const markdownContent = section.blocks.map(b => b.parent).join("\n");
-        const convertHtml = await convertMarkdownToHtml(markdownContent);
-        const htmlContent = await convertTableToDl(convertHtml);
-        return { title: section.title, content: htmlContent };
-    })
-);
-const separateSections = htmlSections.slice(0,4);
-
 const section_gallery = [];
 array_sections.forEach(block => {
     if(block.blocks[0].type == "heading_2" && block.blocks[0].parent.includes("フォトギャラリー")){
@@ -148,78 +154,6 @@ await Promise.all(
 
 );
 const images = sectionImageGallery.flat();
-
-
-
-
-
-
-
-// const mdString = n2m.toMarkdownString(mdblocks);
-// const processor = unified();
-// processor.use(remarkParse, { fragment: true });
-// processor.use(remarkGfm);
-// processor.use(remarkUnwrapImages);
-// processor.use(remarkRehype);
-// processor.use(rehypeRaw);
-// processor.use(rehypeStringify);
-
-// let html = String(await processor.process(mdString.parent));
-
-// const dom = new JSDOM(html);
-// const document = dom.window.document;
-
-// const headings = [...document.querySelectorAll("h2")];
-// if (headings.length > 0) {
-//     const firstH2 = headings[0];
-
-//     const introSection = document.createElement("section");
-//     introSection.classList.add("introduction");
-//     let nextElem = document.body.firstChild;
-
-//     while (nextElem && nextElem !== firstH2) {
-//         const moveElem = nextElem;
-//         nextElem = nextElem.nextSibling;
-//         introSection.appendChild(moveElem);
-//     }
-
-//     document.body.insertBefore(introSection, firstH2);
-// }
-// headings.forEach((h2) => {
-//     const section = document.createElement("section");
-//     section.classList.add("topic");
-//     if(h2.textContent === "フォトギャラリー"){
-//         section.setAttribute("id","gallery");
-//     }
-//     h2.parentNode.insertBefore(section, h2);
-//     section.appendChild(h2);
-//     let nextElem = section.nextSibling;
-
-//     while (nextElem && !(nextElem.tagName && nextElem.tagName.toLowerCase() === "h2")) {
-//         const moveElem = nextElem;
-//         nextElem = nextElem.nextSibling;
-//         section.appendChild(moveElem);
-//     }
-// });
-
-// html = dom.serialize();
-
-// html = html.replace(/<table>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>[\s\S]*?<\/table>/g, match => {
-//     return match
-//         .replace(/<thead>[\s\S]*?<\/thead>/g, '')
-//         .replace(/<tr>(.*?)<\/tr>/g, (_, tr) => {
-//             const cells = tr.match(/<td[^>]*>(.*?)<\/td>/g);
-//             if (cells && cells.length >= 2) {
-//                 const dt = cells[0].replace(/<\/?td[^>]*>/g, '').trim();
-//                 const dd = cells.slice(1).map(td => td.replace(/<\/?td[^>]*>/g, '').trim()).join(', ');
-//                 return `<dt>${dt}</dt><dd>${dd}</dd>`;
-//             }
-//             return '';
-//         })
-//         .replace(/<table>|<\/table>|<tbody>|<\/tbody>/g, '')
-//         .trim();
-// });
-// html = html.replace(/(<dt>.*?<\/dt><dd>.*?<\/dd>)/g, '<dl>$1</dl>');
 
 const hierarchies = [
     {
@@ -270,7 +204,6 @@ const lists = [
                     </div>
                 </section>
             </section>
-            <!-- <section id="mainContent" set:html={html}></section> -->
             <section id="mainContent">
                 {separateSections.map((section) => (
                     <section class="topics" set:html={section.content}></section>
@@ -279,11 +212,8 @@ const lists = [
                     <div set:html={sectionTitleGallery}></div>
                     <SwiperGallery images={images} client:load/>
                 </section>
-                <section>
-                    <p>画像の引用元</p>
-                </section>
             </section>
         </article>
-        <RelatedArticle title={title} thumbnail={thumbnail} series={series_slug} date={date} />
+        <RelatedArticle title={title} thumbnail={thumbnail} series={series_slug} date={date} brand={brand} />
     </main>
 </Layout>

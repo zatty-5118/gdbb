@@ -3,21 +3,33 @@ import { array__allArticleData } from '../../scripts/api/notionBlog.js';
 import SwiperArticle from './SwiperArticle.jsx';
 import '../../styles/relatedArticle.scss';
 
-const { title,series } = Astro.props;
+const { title,series,brand } = Astro.props;
 
-const relatedArticle = array__allArticleData.filter((value) =>
-    value.title !== title && value.seriesSlug === series
+const sameSeries = array__allArticleData.filter((value) =>
+    value.title !== title && value.seriesSlug === series && value.published === true
 ).slice(0,6);
 
-const seriesText = array__allArticleData.filter((value) =>
+const sameBrand = array__allArticleData.filter((value) =>
+    value.title !== title && value.seriesSlug !== series && value.published === true && value.brand === brand
+).slice(0,6);
+
+
+const titleText = array__allArticleData.filter((value) =>
     value.title === title
 );
-console.log(relatedArticle.length);
 ---
 
-{relatedArticle.length !== 0 ? 
-    <section class="relatedArticle">
-        <h2>{seriesText[0].series}シリーズの関連キットはこちら</h2>
-        <SwiperArticle articles={relatedArticle} client:load/>
-    </section> : <></>
-}
+<section class="relatedArticle">
+    {sameSeries.length !== 0 ? 
+        <section class="sameSeries">
+            <h2>{titleText[0].series}の関連キットはこちら</h2>
+            <SwiperArticle articles={sameSeries} client:load/>
+        </section> : <></>
+    }
+    {sameBrand.length !== 0 ? 
+        <section class="sameBrand">
+            <h2>{titleText[0].brand}の関連キットはこちら</h2>
+            <SwiperArticle articles={sameBrand} client:load/>
+        </section> : <></>
+    }      
+</section>

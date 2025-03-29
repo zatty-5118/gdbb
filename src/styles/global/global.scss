@@ -15,6 +15,10 @@ body{
     width: 100%;
     text-decoration: none;
     color: cl(cl-black);
+    transition: 0.3s all;
+    @include hover {
+      opacity: 0.5;
+    }
   }
 
   img {

@@ -1,48 +1,79 @@
 .relatedArticle{
     width: 90%;
     margin: 0 auto;
-    margin-top: rem(48);
+    margin-top: rem(64);
+    border-top: 2px dashed cl(cl-RH);
+    border-top: 2px dashed;
+    border-image: linear-gradient(to right, cl(cl-RH) 0%, cl(cl-MH) 50%, cl(cl-RC) 75%, cl(cl-KYA) 100%);
+    border-image-slice: 1;
+
 
     @include responsive(md){
         max-width: 680px;
     }
 
     h2{
-        margin-bottom: rem(16);
+        margin: rem(32) 0 rem(16);
     }
 
-    .article-swiper{
-        article{
-            a{
-                overflow: hidden;
-                box-shadow: 0 3px 10px rgba(0,0,0,.2);
-                border-radius: 10px;    
-            }
+    .sameSeries{
+        margin-bottom: rem(48);
+    }
 
-            .thumbnail{
-                img{
-                    border-radius: 10px 10px 0 0;
+    .swiper-container{
+        position: relative;
+        .swiper-pagination{
+            bottom: -24px;
+            right: 0;
+            left: 0;
+            margin: 0 auto;
+
+            &-bullet {
+                margin: 0 rem(8) !important;
+                width: 8px;
+                height: 8px;
+                &-active{
+                    background: url("../../public/images/swiper-pagination.svg") no-repeat center/contain;
+                    border-radius: unset; 
+                    background-color: inherit;
+                    opacity: 1;
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+        }
+
+        .article-swiper{
+            article{
+                a{
+                    overflow: hidden;
+                    box-shadow: 0 3px 10px rgba(0,0,0,.2);
+                    border-radius: 10px;    
+                }
+    
+                .thumbnail{
+                    img{
+                        border-radius: 10px 10px 0 0;
+                        aspect-ratio: 3/2;
+                        object-fit: cover;
+                    }    
+                }
+    
+                .title{
+                    background-color: cl(cl-white);
+                    padding: rem(8);
+                    border-radius: 0 0 10px 10px;
+    
+                    h3{
+                        font-size: rem(14);
+                        min-height: 44px;
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 2;
+                        overflow: hidden;        
+                    }
                 }    
             }
-
-            .title{
-                background-color: cl(cl-white);
-                padding: rem(16);
-                border-radius: 0 0 10px 10px;
-
-                h3{
-                    font-size: rem(16);
-                    @include responsive(md){
-                        font-size: rem(18);
-                    }                
-                    min-height: 52px;
-                    display: -webkit-box;
-                    -webkit-box-orient: vertical;
-                    -webkit-line-clamp: 2;
-                    overflow: hidden;        
-                }
-            }    
-        }
+        }    
     }
-
 }
