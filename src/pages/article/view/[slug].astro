@@ -118,8 +118,7 @@ const htmlSections = await Promise.all(
         return { title: section.title, content: finalHtmlContent };
     })
 );
-const separateSections = htmlSections.slice(0,4);
-
+const separateSections = htmlSections.slice(0,3);
 function extractImageUrls(markdown) {
     const regex = /!\[.*?\]\((.*?)\)/g;
     const urls = [];
@@ -132,15 +131,18 @@ function extractImageUrls(markdown) {
     return urls;
 };
 const section_gallery = [];
+const section_shoppingInfo = [];
 array_sections.forEach(block => {
     if(block.blocks[0].type == "heading_2" && block.blocks[0].parent.includes("フォトギャラリー")){
         section_gallery.push(block);
     }
+    if(block.blocks[0].type == "heading_2" && block.blocks[0].parent.includes("販売情報")){
+        section_shoppingInfo.push(block);
+    }
 });
 
-let sectionTitleGallery
+let sectionTitleGallery;
 const sectionImageGallery = [];
-
 await Promise.all(
     section_gallery[0].blocks.map(async elem => {
         if(elem.type == "heading_2"){
@@ -151,10 +153,23 @@ await Promise.all(
             return sectionImageGallery
         }
     })
-
 );
+let sectionTitleShoping;
+await Promise.all(
+    section_shoppingInfo[0].blocks.map(async elem => {
+        if(elem.type == "heading_2"){
+            sectionTitleShoping = await convertMarkdownToHtml(elem.parent);
+            return sectionTitleShoping
+        }
+    })
+);
+
 const images = sectionImageGallery.flat();
 
+const searchKeyword = `ガンプラ ${title}`;
+const rakutenSearchUrl = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(searchKeyword)}/`;
+const amazonSearchUrl = `https://www.amazon.co.jp/s?k=${encodeURIComponent(searchKeyword)}`;
+const yahooSearchUrl = `https://shopping.yahoo.co.jp/search?p=${encodeURIComponent(searchKeyword)}`;
 const hierarchies = [
     {
         position : 2,
@@ -208,6 +223,20 @@ const lists = [
                 {separateSections.map((section) => (
                     <section class="topics" set:html={section.content}></section>
                 ))}    
+                <section class="topics">
+                    <div set:html={sectionTitleShoping}></div>
+                    <div class="button-shop">
+                        <div class="amazon">
+                            <a href={amazonSearchUrl} target="_blank">amazon</a>
+                        </div>
+                        <div class="rakuten">
+                            <a href={rakutenSearchUrl} target="_blank">楽天</a>
+                        </div>
+                        <div class="yahoo">
+                            <a href={yahooSearchUrl} target="_blank">Yahoo Shopping</a>    
+                        </div>
+                    </div>
+                </section>
                 <section class="topics" id="gallery">
                     <div set:html={sectionTitleGallery}></div>
                     <SwiperGallery images={images} client:load/>

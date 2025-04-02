@@ -239,6 +239,44 @@ article{
             }
         }
 
+        .button-shop{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: rem(32);
+            @include responsive(md){
+                flex-direction: row;
+            }
+                      
+            div{
+                border-radius: 50px;
+                a{
+                    color: cl(cl-white);
+                    width: 300px;
+                    height: 50px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    @include responsive(md){
+                        max-width: 200px;
+                    }            
+                }
+            }
+
+            .amazon{
+                background-color: cl(cl-amazon);
+            }
+
+            .rakuten{
+                background-color: cl(cl-rakuten);
+            }
+
+            .yahoo{
+                background-color: cl(cl-yahoo);
+            }
+        }
+
         #gallery{
             .swiper{
                 .swiper-slide{
