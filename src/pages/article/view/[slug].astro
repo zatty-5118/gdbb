@@ -132,36 +132,37 @@ function extractImageUrls(markdown) {
 };
 const section_gallery = [];
 const section_shoppingInfo = [];
+const secction_custom =[];
 array_sections.forEach(block => {
     if(block.blocks[0].type == "heading_2" && block.blocks[0].parent.includes("フォトギャラリー")){
         section_gallery.push(block);
+        secction_custom.push(block)
     }
     if(block.blocks[0].type == "heading_2" && block.blocks[0].parent.includes("販売情報")){
         section_shoppingInfo.push(block);
+        secction_custom.push(block)
     }
 });
-
 let sectionTitleGallery;
+let sectionTitleShoping;
 const sectionImageGallery = [];
 await Promise.all(
-    section_gallery[0].blocks.map(async elem => {
-        if(elem.type == "heading_2"){
-            sectionTitleGallery = await convertMarkdownToHtml(elem.parent);
-            return sectionTitleGallery
-        }else if(elem.type == "image"){
-            sectionImageGallery.push(extractImageUrls(elem.parent));
-            return sectionImageGallery
-        }
+    secction_custom.map((obj) => {
+        obj.blocks.map(async elem => {
+            if(elem.type == "heading_2" && elem.parent.includes("フォトギャラリー")){
+                sectionTitleGallery = await convertMarkdownToHtml(elem.parent);
+                return sectionTitleGallery
+            }else if(elem.type == "image"){
+                sectionImageGallery.push(extractImageUrls(elem.parent));
+                return sectionImageGallery
+            }
+            if(elem.type == "heading_2" && elem.parent.includes("販売情報")){
+                sectionTitleShoping = await convertMarkdownToHtml(elem.parent);
+                return sectionTitleShoping
+            }
+        })
     })
-);
-let sectionTitleShoping;
-await Promise.all(
-    section_shoppingInfo[0].blocks.map(async elem => {
-        if(elem.type == "heading_2"){
-            sectionTitleShoping = await convertMarkdownToHtml(elem.parent);
-            return sectionTitleShoping
-        }
-    })
+
 );
 
 const images = sectionImageGallery.flat();
