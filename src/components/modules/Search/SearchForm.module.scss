@@ -65,6 +65,22 @@
             background-position: 0% 50%;
             transition: 0.3s 
             background-position ease-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: rem(8);
+
+            &::after{
+                content: "";
+                display: inline-block;
+                background: cl(cl-white);
+                width: 18px;
+                height: 18px;
+                mask: url("/public/images/icon-search.svg") no-repeat center center / contain;
+                -webkit-mask: url("/public/images/icon-search.svg") no-repeat center center / contain;
+
+            }
+
 
             @include hover{
                 background-position: 100% 50%;
