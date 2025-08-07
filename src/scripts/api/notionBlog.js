@@ -26,7 +26,11 @@ responseBlog.results.map((value) => {
     obj["description"] = value.properties.Description.rich_text[0].text.content;
     obj["brand"] = value.properties.Brand.multi_select[0].name;
     obj["favorite"] = value.properties.Favorite.checkbox;
-    array__allArticleData.push(obj);
+    obj["release"] = value.properties.Release.date.start
+
+    if(obj["published"]){
+        array__allArticleData.push(obj);
+    };
 
     array__allArticleData.sort((latest, oldest) => Date.parse(oldest.date) - Date.parse(latest.date));
 });

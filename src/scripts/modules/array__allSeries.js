@@ -31,7 +31,7 @@ export const array__allSeries = [
     },
     {
         series: "00",
-        seriesJa: "機動戦士ガンダム00 シリーズ",
+        seriesJa: "機動戦士ガンダム00",
         seriesSlug:"00",
         century: "another"
     },

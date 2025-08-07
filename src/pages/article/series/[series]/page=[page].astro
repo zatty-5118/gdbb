@@ -1,6 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 import Layout from '../../../../layouts/Layout.astro';
+import ArticleCard from '../../../../components/modules/Card/ArticleCard';
+import Pagination from '../../../../components/modules/Pagination/Pagination.astro';
 import { BASE_URL } from '../../../../scripts/modules/baseURL.js';
 import { array__allArticleData } from '../../../../scripts/api/notionBlog.js';
 import { array__allSeries } from '../../../../scripts/modules/array__allSeries.js';
@@ -24,7 +25,7 @@ export async function getStaticPaths({paginate}) {
       params:{ 
         series
       },
-      pageSize: 15,
+      pageSize: 5,
       props: { 
         article: array__filterArticle,
         series_ja: array__filterArticle[0]["series"],
@@ -33,7 +34,8 @@ export async function getStaticPaths({paginate}) {
   });
 }
 
-const { page,article,series_ja,series_image } = Astro.props;
+const { page,series_ja,series_image } = Astro.props;
+const article = page.data;
 const { series } = Astro.params;
 const totalPageNumber = Math.ceil(page.total / page.size);
 let currentPageNumber;
@@ -84,7 +86,7 @@ const hierarchies = [
   {
     position : 3,
     itemName: `${page.currentPage}ページ目`,
-    itemPath: `${BASE_URL}/article/list/page=${page.currentPage}`
+    itemPath: `${BASE_URL}/article/series/${series}/page=${page.currentPage}`
   },
 
 ]
@@ -97,7 +99,7 @@ const lists = [
   },
   {
     name: `${page.currentPage}ページ目`,
-    path: `${BASE_URL}/article/list/page=${page.currentPage}`
+    path: `${BASE_URL}/article/series/${series}/page=${page.currentPage}`
   }
 ]
 
@@ -119,79 +121,70 @@ const lists = [
         <div class="title">
           <h1>「{series_ja}」のガンプラ一覧</h1>
         </div>
-        <ul>
-          {publishedArticle.map((value) =>
-            <li>
-              <a href={`${BASE_URL}/article/view/${value.slug}`}>
-                <div class="image">
-                  <Image src={value.thumbnail} alt={value.title} width={950} height={600}/>
-                </div>
-                <div class="text">
-                  <div class="title">
-                    <h2>{value.title}</h2>
-                  </div>
-                  <div class="description">
-                    <p>{value.description}</p>
-                  </div>
-                  <div class="date">
-                    <time datetime={value.date}>{`${new Date(value.date).getFullYear()}.${('0'+(new Date(value.date).getMonth()+1)).slice(-2)}.${('0'+(new Date(value.date).getDate())).slice(-2)}`}</time>
-                  </div>
-                </div>
-              </a>
-            </li>
-          )}
-        </ul>  
+        <ArticleCard articles={publishedArticle} cardType="border" client:load/>
       </div>
-    </section> 
-    {totalPageNumber > 1 && (
+    </section>
+    <Pagination
+      totalPageNumber={totalPageNumber}
+      currentPageNumber={currentPageNumber}
+      paginationGenerator={paginationGenerator}
+      page={page}
+      BASE_URL={BASE_URL}
+      category="series"
+      slug={series}
+    />
+
+    <!-- {totalPageNumber > 1 && (
       <section class="pagiNation">
-        <div class="first-button">
-          {page.url.prev ? <a href={`${BASE_URL}/${page.url.prev}`}></a> : <p class="disabled"></p>}
-        </div>
-        <div class="number-list">
-          <ul>
-            {paginationGenerator().map((page) => {
-              if (page === 1 && currentPageNumber === 1) {
+        <div class="inner">
+          <div class="first-button">
+            {page.url.prev ? <a href={`${BASE_URL}/${page.url.prev}`}></a> : <p class="disabled"></p>}
+          </div>
+          <div class="number-list">
+            <ul>
+              {paginationGenerator().map((page) => {
+                if (page === 1 && currentPageNumber === 1) {
+                  return (
+                    <li>
+                      <p class="currentPageNumber">{page}</p>
+                    </li>
+                  )
+                } else if (page === 1 && currentPageNumber > 1) {
+                  return (
+                    <li>
+                      <a href={`${BASE_URL}/article/series/${series}/page=${page}`}>
+                        {page}
+                      </a>
+                    </li>
+                  )
+                } else if (page === '...') {
+                  return (
+                    <li>
+                      <p class="ellipses">{page}</p>
+                    </li>
+                  )
+                } else if (page === currentPageNumber) {
+                  return (
+                    <li>
+                      <p class="currentPageNumber">{page}</p>
+                    </li>
+                  )
+                } 
                 return (
                   <li>
-                    <p class="currentPageNumber">{page}</p>
-                  </li>
-                )
-              } else if (page === 1 && currentPageNumber > 1) {
-                return (
-                  <li>
-                    <a href={`${BASE_URL}/article/list/page=${page}`}>
+                    <a href={`${BASE_URL}/article/series/${series}/page=${page}`}>
                       {page}
                     </a>
                   </li>
                 )
-              } else if (page === '...') {
-                return (
-                  <li>
-                    <p class="ellipses">{page}</p>
-                  </li>
-                )
-              } else if (page === currentPageNumber) {
-                return (
-                  <li>
-                    <p class="currentPageNumber">{page}</p>
-                  </li>
-                )
-              } 
-              return (
-                <li>
-                  <a href={`${BASE_URL}/article/list/page=${page}`}>
-                    {page}
-                  </a>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-        <div class="last-button">
-          {page.url.next ? <a href={`${BASE_URL}/${page.url.next}`}></a> : <p class="disabled"></p>}
+              })}
+            </ul>
+          </div>
+          <div class="last-button">
+            {page.url.next ? <a href={`${BASE_URL}/${page.url.next}`}></a> : <p class="disabled"></p>}
+          </div>
         </div>
       </section>
-    )}
+    )} -->
   </main>
 </Layout>

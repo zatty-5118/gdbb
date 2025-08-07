@@ -1,0 +1,37 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SearchResults from '../../components/modules/Search/SearchResults.jsx';
+import { BASE_URL } from '../../scripts/modules/baseURL.js';
+import { array__allArticleData } from '../../scripts/api/notionBlog.js';
+import "../../styles/articleList.scss";
+const hierarchies = [
+	{
+		position : 2,
+		itemName: `検索結果`,
+		itemPath: `${BASE_URL}/search/`
+	},
+
+];
+
+const lists = [
+	{ 
+		name: `検索結果`,
+		path: `${BASE_URL}/search/`
+	},
+
+];
+
+---
+<Layout
+	url=`${BASE_URL}/search/`
+	title="検索結果 | ガンプラデータベースブログ"
+	description="ブログ記事の検索結果ページです。"
+	hierarchies={hierarchies}
+	lists={lists}
+>
+	<main>
+        <div class="inner">
+            <SearchResults client:load data={array__allArticleData}/>
+        </div>
+	</main>
+</Layout>
