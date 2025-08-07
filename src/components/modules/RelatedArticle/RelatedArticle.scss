@@ -44,38 +44,43 @@
         }
 
         .article-swiper{
-            .swiper-slide {
+            padding: rem(8);
+
+            @include responsive(md){
+                padding: rem(16);
             }
-            article{
-                box-shadow: 0 3px 10px rgba(0,0,0,.2);
+            
+            .swiper-slide {
                 a{
-                    overflow: hidden;
-                    border-radius: 10px;    
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: 0 3px 10px rgba(0,0,0,.2);
+                    border-radius: 10px;
                 }
-    
+
                 .thumbnail{
                     img{
                         border-radius: 10px 10px 0 0;
                         // aspect-ratio: 3/2;
                         aspect-ratio: 16/9;
                         object-fit: cover;
-                    }    
+                    }
                 }
-    
+
                 .title{
                     background-color: cl(cl-white);
-                    padding: rem(8);
+                    padding: rem(16);
                     border-radius: 0 0 10px 10px;
-    
+
                     h3{
                         font-size: rem(14);
                         min-height: 44px;
                         display: -webkit-box;
                         -webkit-box-orient: vertical;
                         -webkit-line-clamp: 2;
-                        overflow: hidden;        
+                        overflow: hidden;
                     }
-                }    
+                }
             }
         }    
     }

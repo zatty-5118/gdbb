@@ -78,7 +78,7 @@ export default function SearchResults({ data }) {
                 </h1>
               </div>
             )}
-            <p>検索結果：{results.length}件</p>
+            <p className='resultLength'>検索結果：{results.length}件</p>
             {results.length === 0 ? (
               <div className="resultText">
                 <p>該当する記事はありませんでした。</p>

@@ -2,21 +2,13 @@ import { useState,useEffect } from 'react';
 import { BASE_URL } from '../../../scripts/modules/baseURL.js';
 import { array__allBrand } from '../../../scripts/modules/array__allBrand.js';
 import { array__allSeries } from '../../../scripts/modules/array__allSeries.js';
-import { array__allArticleData} from '../../../scripts/api/notionBlog.js';
 import styles from "./SearchForm.module.scss";
 
-export default function SearchForm() {
+export default function SearchForm({years}) {
     const [msName, setmsName] = useState('');
     const [series, setSeries] = useState('');
     const [brand, setBrand] = useState('');
     const [release, setRelease] = useState('');
-
-    const releaseYears = Array.from(
-    new Set(
-        array__allArticleData
-            .map(item => item.release?.slice(0, 4).toString())
-            .filter(Boolean)
-    )).sort(); 
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,17 +21,6 @@ export default function SearchForm() {
         if (release) params.set('release', release);
 
         window.location.href = `${BASE_URL}/search?${params.toString()}`;
-
-        // if (typeof window !== 'undefined') {
-        //     const params = new URLSearchParams();
-
-        //     if (msName) params.set('msName', msName);
-        //     if (series) params.set('series', series);
-        //     if (brand) params.set('brand', brand);
-        //     if (release) params.set('release', release);
-
-        //     window.location.href = `${BASE_URL}/search?${params.toString()}`;
-        // }
     };
 
     return (
@@ -57,10 +38,11 @@ export default function SearchForm() {
                     className={release === '' ? "" : `${styles.selected}`}
                 >
                     <option value="">発売年を選択</option>
-                    {releaseYears.map((year, idx) => (
-                        <option key={idx} value={year}>{year}年</option>
+                    {years.map((year, idx) => (
+                        <option value={year}>{year}年</option>
                     ))}
                 </select>
+
             </div>
             <div className={styles.searchForm__field}>
                 <select 
@@ -89,7 +71,7 @@ export default function SearchForm() {
                 </select>
             </div>
             <div className={styles.searchForm__button}>
-                <button type="submit">検索</button>
+                <button type="submit" disabled={!msName && !series && !brand && !release}>検索</button>
             </div>
         </form>
     );

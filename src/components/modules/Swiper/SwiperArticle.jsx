@@ -37,8 +37,7 @@ const SwiperArticle = ({ articles }) => {
             >
                 {articles.map((article, index) => (
                     <SwiperSlide key={index}>
-                        <article>
-                            <a href={`/gdbb/article/view/${article.slug}`} target="_blank">
+                                                    <a href={`/gdbb/article/view/${article.slug}`} target="_blank">
                                 <div className="thumbnail">
                                     <img src={article.thumbnail} alt={article.title} width={800} height={600} loading="lazy" decoding="async"/>
                                 </div>
@@ -46,7 +45,6 @@ const SwiperArticle = ({ articles }) => {
                                     <h3>{article.title}</h3>
                                 </div>
                             </a>
-                        </article>
                     </SwiperSlide>
                 ))}
             </Swiper>

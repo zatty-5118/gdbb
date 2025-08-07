@@ -1,24 +1,3 @@
-.mainImg{
-    img{
-        max-width: 440px;
-        max-height: 220px;
-        aspect-ratio: 16/9;
-        margin:  0 auto;
-    }
-}
-
-.title{
-    h1{
-        display: flex;
-        margin: rem(16) 0;
-    }
-
-    .searchWord{
-        display: flex;
-        gap: rem(8);
-    }
-}
-
 circle {
     fill: none;
     stroke: cl(cl-RH);
@@ -70,6 +49,22 @@ circle {
         left: 50%;
         transform: translate(-50%, -50%);
     }
+}
+
+.title{
+    h1{
+        display: flex;
+        margin: rem(16) 0;
+    }
+
+    .searchWord{
+        display: flex;
+        gap: rem(8);
+    }
+}
+
+.resultLength{
+    margin-bottom: rem(8);
 }
 
 .resultText{

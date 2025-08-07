@@ -9,6 +9,10 @@ body{
     padding-bottom: rem(72);
   }
 
+  h1{
+    margin: rem(16) 0;
+  }
+
   a {
     display: inline-block;
     height: 100%;
@@ -26,6 +30,18 @@ body{
     height: auto;
     aspect-ratio: attr(width) / attr(height);
     object-fit: cover;
+  }
+
+  .articleList{
+    .keyVisual{
+      img{
+        max-width: 440px;
+        max-height: 220px;
+        aspect-ratio: 16/9;
+        margin:  0 auto;
+
+      }
+    }
   }
 
   .sp {

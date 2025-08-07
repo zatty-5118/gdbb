@@ -5,7 +5,6 @@ import Pagination from '../../../../components/modules/Pagination/Pagination.ast
 import { BASE_URL } from '../../../../scripts/modules/baseURL.js';
 import { array__allArticleData } from '../../../../scripts/api/notionBlog.js';
 import { array__allSeries } from '../../../../scripts/modules/array__allSeries.js';
-import '../../../../styles/articleList.scss';
 
 export async function getStaticPaths({paginate}) {
   array__allArticleData.filter((article) => {
@@ -115,7 +114,7 @@ const lists = [
   <main>
     <section class="articleList">
       <div class="inner">
-        <div class="mainImg">
+        <div class="keyVisual">
           <img src=`https://raw.githubusercontent.com/zatty-5118/gdbb/refs/heads/main/public/images/series/${series}.jpg` alt="">
         </div>
         <div class="title">

@@ -30,6 +30,14 @@ const filter__seriesOther = array__allSeries.filter((value) => {
 });
 
 
+const releaseYears = Array.from(
+new Set(
+	array__allArticleData
+		.map(item => item.release?.slice(0, 4).toString())
+		.filter(Boolean)
+)).sort(); 
+
+
 const hierarchies = [];
 
 const lists = [];
@@ -134,28 +142,26 @@ const lists = [];
 		<section class="brandList">
 			<div class="inner">
 				<h2>ブランドから探す</h2>
-				<div class="brandList">
-					<ul>
-						{array__allBrand.map((value) => 
-							<li>
-								<a href={`${BASE_URL}/article/brand/${value.brandSlug}/page=1`}>
-									<div class="image">
-										<img src={`https://raw.githubusercontent.com/zatty-5118/gdbb/main/public/images/brand/${value.brandSlug}.jpg`} alt={value.brand} width={800} height={600} />
-									</div>
-									<div class="text">
-										<p>{value.brand}</p>
-									</div>
-								</a>
-							</li>
-						)}
-					</ul>
-				</div>
+				<ul>
+					{array__allBrand.map((value) => 
+						<li>
+							<a href={`${BASE_URL}/article/brand/${value.brandSlug}/page=1`}>
+								<div class="image">
+									<img src={`https://raw.githubusercontent.com/zatty-5118/gdbb/main/public/images/brand/${value.brandSlug}.jpg`} alt={value.brand} width={800} height={600} />
+								</div>
+								<div class="text">
+									<p>{value.brand}</p>
+								</div>
+							</a>
+						</li>
+					)}
+				</ul>
 			</div>
 		</section>
 		<section>
 			<div class="inner">
 				<h2>記事を検索</h2>
-				<SearchForm client:load/>
+				<SearchForm years={releaseYears} client:load/>
 			</div>
 		</section>
 	</main>
