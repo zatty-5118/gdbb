@@ -32,6 +32,9 @@
             background-color: cl(cl-white);
             border: 1px solid cl(cl-gray2);
             color: cl(cl-gray3);
+            -webkit-appearance: none; /* iOS Safari */
+            -moz-appearance: none;    /* Firefox */
+            appearance: none;
 
             &.selected,
             option{
