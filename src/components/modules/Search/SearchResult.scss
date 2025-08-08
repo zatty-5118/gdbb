@@ -1,3 +1,6 @@
+main{
+    min-height: 500px;
+}
 circle {
     fill: none;
     stroke: cl(cl-RH);
@@ -54,6 +57,7 @@ circle {
 .title{
     h1{
         display: flex;
+        flex-wrap: wrap;
         margin: rem(16) 0;
     }
 

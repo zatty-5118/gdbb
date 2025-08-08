@@ -15,6 +15,10 @@
             padding: 0.5rem;
             background-color: cl(cl-white);
             border: 1px solid cl(cl-gray2);
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 0;
+            font-size: rem(16);
 
             &[placeholder] {
                 color: cl(cl-gray3);
