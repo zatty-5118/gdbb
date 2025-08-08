@@ -1,13 +1,13 @@
 .searchForm{
     margin-top: 1rem;
     &__field {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
         gap: 1rem;
         margin-bottom: 1rem;
 
         @include responsive(md){
-            flex-direction: row;
+            grid-template-columns: repeat(2, 1fr);
         }
 
         input {
@@ -25,6 +25,22 @@
             }
 
         }
+    }
+
+    &__select {
+        position: relative;
+
+        &::after{
+            content: "";
+            position: absolute;
+            top: 15px;
+            right: 16px;
+            width: 12px;
+            height: 12px;
+            background: cl(cl-RH);
+            mask: url("/public/images/icon/icon-arrow-normal.svg") no-repeat center center / contain;
+            -webkit-mask: url("/public/images/icon/icon-arrow-normal.svg") no-repeat center center / contain;
+        }
 
         select {
             width: 100%;
@@ -32,8 +48,8 @@
             background-color: cl(cl-white);
             border: 1px solid cl(cl-gray2);
             color: cl(cl-gray3);
-            -webkit-appearance: none; /* iOS Safari */
-            -moz-appearance: none;    /* Firefox */
+            -webkit-appearance: none;
+            -moz-appearance: none;
             appearance: none;
 
             &.selected,
@@ -45,7 +61,6 @@
                 color: cl(cl-black);
             }
         }
-
     }
 
     &__button {
@@ -79,8 +94,8 @@
                 background: cl(cl-white);
                 width: 18px;
                 height: 18px;
-                mask: url("/public/images/icon-search.svg") no-repeat center center / contain;
-                -webkit-mask: url("/public/images/icon-search.svg") no-repeat center center / contain;
+                mask: url("/public/images/icon/icon-search.svg") no-repeat center center / contain;
+                -webkit-mask: url("/public/images/icon/icon-search.svg") no-repeat center center / contain;
 
             }
 

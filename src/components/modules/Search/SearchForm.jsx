@@ -10,6 +10,22 @@ export default function SearchForm({years}) {
     const [brand, setBrand] = useState('');
     const [release, setRelease] = useState('');
 
+    useEffect(() => {
+        const handlePageShow = (event) => {
+            if (event.persisted) {
+                setmsName('');
+                setSeries('');
+                setBrand('');
+                setRelease('');
+            }
+        };
+
+        window.addEventListener('pageshow', handlePageShow);
+        return () => {
+            window.removeEventListener('pageshow', handlePageShow);
+        };
+    }, []);
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -32,43 +48,49 @@ export default function SearchForm({years}) {
                     value={msName}
                     onChange={(e) => setmsName(e.target.value)}
                 />
-                <select 
-                    value={release} 
-                    onChange={(e) => setRelease(e.target.value)}
-                    className={release === '' ? "" : `${styles.selected}`}
-                >
-                    <option value="">発売年を選択</option>
-                    {years.map((year, idx) => (
-                        <option value={year}>{year}年</option>
-                    ))}
-                </select>
+                <div className={styles.searchForm__select}>
+                    <select 
+                        value={release} 
+                        onChange={(e) => setRelease(e.target.value)}
+                        className={release === '' ? "" : `${styles.selected}`}
+                    >
+                        <option value="">発売年を選択</option>
+                        {years.map((year, idx) => (
+                            <option value={year}>{year}年</option>
+                        ))}
+                    </select>
+                </div>
 
             </div>
             <div className={styles.searchForm__field}>
-                <select 
-                    value={series} 
-                    onChange={(e) => setSeries(e.target.value)}
-                    className={series === '' ? "" : `${styles.selected}`}
-                >
-                    <option value="">作品を選択</option>
-                    {array__allSeries.map((option, idx) => (
-                        <option key={idx} value={option.series}>
-                            {option.seriesJa}
-                        </option>
-                    ))}
-                </select>
-                <select 
-                    value={brand} 
-                    onChange={(e) => setBrand(e.target.value)}
-                    className={brand === '' ? "" : `${styles.selected}`}
-                >
-                    <option value="">ブランドを選択</option>
-                    {array__allBrand.map((option, idx) => (
-                        <option key={idx} value={option.brand}>
-                            {option.brand}
-                        </option>
-                    ))}
-                </select>
+                <div className={styles.searchForm__select}>
+                    <select 
+                        value={series} 
+                        onChange={(e) => setSeries(e.target.value)}
+                        className={series === '' ? "" : `${styles.selected}`}
+                    >
+                        <option value="">作品を選択</option>
+                        {array__allSeries.map((option, idx) => (
+                            <option key={idx} value={option.series}>
+                                {option.seriesJa}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className={styles.searchForm__select}>
+                    <select 
+                        value={brand} 
+                        onChange={(e) => setBrand(e.target.value)}
+                        className={brand === '' ? "" : `${styles.selected}`}
+                    >
+                        <option value="">ブランドを選択</option>
+                        {array__allBrand.map((option, idx) => (
+                            <option key={idx} value={option.brand}>
+                                {option.brand}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <div className={styles.searchForm__button}>
                 <button type="submit" disabled={!msName && !series && !brand && !release}>検索</button>

@@ -328,7 +328,7 @@ article{
                     }        
 
                     &::after{
-                        background-image: url("../../public/images/allow-right.svg");
+                        background-image: url("../../public/images/icon/icon-arrow-circle.svg");
                     }
                 }
                 .swiper-button-prev{
@@ -338,7 +338,8 @@ article{
                     }        
 
                     &::after{
-                        background-image: url("../../public/images/allow-left.svg");
+                        background-image: url("../../public/images/icon/icon-arrow-circle.svg");
+                        transform: rotate(180deg);
                     }
                 }
 
