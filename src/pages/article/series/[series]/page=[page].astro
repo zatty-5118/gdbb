@@ -24,7 +24,7 @@ export async function getStaticPaths({paginate}) {
       params:{ 
         series
       },
-      pageSize: 5,
+      pageSize: 15,
       props: { 
         article: array__filterArticle,
         series_ja: array__filterArticle[0]["series"],
