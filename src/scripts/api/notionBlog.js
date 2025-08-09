@@ -14,7 +14,6 @@ const responseBlog = await notionBlog.databases.query({
 const array__allArticleData = [];
 
 responseBlog.results.map((value) => {
-
     const obj = {};
     obj["id"] = value.id;
     obj["slug"] = value.properties.Slug.rich_text[0].text.content;
@@ -26,8 +25,8 @@ responseBlog.results.map((value) => {
     obj["description"] = value.properties.Description.rich_text[0].text.content;
     obj["brand"] = value.properties.Brand.multi_select[0].name;
     obj["favorite"] = value.properties.Favorite.checkbox;
-    obj["release"] = value.properties.Release.date.start
-
+    obj["release"] = value.properties.Release.date.start;
+    obj["pilot"] = value.properties.Pilot.rich_text[0].text.content;
     if(obj["published"]){
         array__allArticleData.push(obj);
     };

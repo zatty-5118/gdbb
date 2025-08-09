@@ -5,7 +5,8 @@ import { array__allSeries } from '../../../scripts/modules/array__allSeries.js';
 import styles from "./SearchForm.module.scss";
 
 export default function SearchForm({years}) {
-    const [msName, setmsName] = useState('');
+    const [msName, setMsName] = useState('');
+    const [pilot, setPilot] = useState('');
     const [series, setSeries] = useState('');
     const [brand, setBrand] = useState('');
     const [release, setRelease] = useState('');
@@ -13,7 +14,8 @@ export default function SearchForm({years}) {
     useEffect(() => {
         const handlePageShow = (event) => {
             if (event.persisted) {
-                setmsName('');
+                setMsName('');
+                setPilot('');
                 setSeries('');
                 setBrand('');
                 setRelease('');
@@ -32,6 +34,7 @@ export default function SearchForm({years}) {
         const params = new URLSearchParams();
 
         if (msName) params.set('msName', msName);
+        if (pilot) params.set('pilot', pilot);
         if (series) params.set('series', series);
         if (brand) params.set('brand', brand);
         if (release) params.set('release', release);
@@ -44,23 +47,16 @@ export default function SearchForm({years}) {
             <div className={styles.searchForm__field}>
                 <input
                     type="text"
-                    placeholder="機体名"
+                    placeholder="機体名を入力"
                     value={msName}
-                    onChange={(e) => setmsName(e.target.value)}
+                    onChange={(e) => setMsName(e.target.value)}
                 />
-                <div className={styles.searchForm__select}>
-                    <select 
-                        value={release} 
-                        onChange={(e) => setRelease(e.target.value)}
-                        className={release === '' ? "" : `${styles.selected}`}
-                    >
-                        <option value="">発売年を選択</option>
-                        {years.map((year, idx) => (
-                            <option value={year}>{year}年</option>
-                        ))}
-                    </select>
-                </div>
-
+                <input
+                    type="text"
+                    placeholder="パイロット名を入力"
+                    value={pilot}
+                    onChange={(e) => setPilot(e.target.value)}
+                />
             </div>
             <div className={styles.searchForm__field}>
                 <div className={styles.searchForm__select}>
@@ -92,8 +88,23 @@ export default function SearchForm({years}) {
                     </select>
                 </div>
             </div>
+            <div className={styles.searchForm__field}>
+                <div className={styles.searchForm__select}>
+                    <select 
+                        value={release} 
+                        onChange={(e) => setRelease(e.target.value)}
+                        className={release === '' ? "" : `${styles.selected}`}
+                    >
+                        <option value="">発売年を選択</option>
+                        {years.map((year, idx) => (
+                            <option value={year}>{year}年</option>
+                        ))}
+                    </select>
+                </div>
+
+            </div>
             <div className={styles.searchForm__button}>
-                <button type="submit" disabled={!msName && !series && !brand && !release}>検索</button>
+                <button type="submit" disabled={!msName && !pilot && !series && !brand && !release}>検索</button>
             </div>
         </form>
     );

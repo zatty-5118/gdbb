@@ -61,8 +61,7 @@ circle {
 
     .searchWord{
         span{
-            &:nth-child(2),
-            &:nth-child(3){
+            &:not(span:first-of-type){
                 margin-left: rem(8);
             }
         }
