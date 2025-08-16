@@ -4,9 +4,10 @@ import { array__allBrand } from '../../../scripts/modules/array__allBrand.js';
 import { array__allSeries } from '../../../scripts/modules/array__allSeries.js';
 import styles from "./SearchForm.module.scss";
 
-export default function SearchForm({years}) {
+export default function SearchForm({years,affiliations}) {
     const [msName, setMsName] = useState('');
     const [pilot, setPilot] = useState('');
+    const [affiliation, setAffiliation] = useState('');
     const [series, setSeries] = useState('');
     const [brand, setBrand] = useState('');
     const [release, setRelease] = useState('');
@@ -16,6 +17,7 @@ export default function SearchForm({years}) {
             if (event.persisted) {
                 setMsName('');
                 setPilot('');
+                setAffiliation('');
                 setSeries('');
                 setBrand('');
                 setRelease('');
@@ -35,6 +37,7 @@ export default function SearchForm({years}) {
 
         if (msName) params.set('msName', msName);
         if (pilot) params.set('pilot', pilot);
+        if (affiliation) params.set('affiliation', affiliation);
         if (series) params.set('series', series);
         if (brand) params.set('brand', brand);
         if (release) params.set('release', release);
@@ -61,6 +64,18 @@ export default function SearchForm({years}) {
             <div className={styles.searchForm__field}>
                 <div className={styles.searchForm__select}>
                     <select 
+                        value={affiliation} 
+                        onChange={(e) => setAffiliation(e.target.value)}
+                        className={affiliation === '' ? "" : `${styles.selected}`}
+                    >
+                        <option value="">所属を選択</option>
+                        {affiliations.map((affiliation, idx) => (
+                            <option value={affiliation}>{affiliation}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className={styles.searchForm__select}>
+                    <select 
                         value={series} 
                         onChange={(e) => setSeries(e.target.value)}
                         className={series === '' ? "" : `${styles.selected}`}
@@ -73,7 +88,9 @@ export default function SearchForm({years}) {
                         ))}
                     </select>
                 </div>
-                <div className={styles.searchForm__select}>
+            </div>
+            <div className={styles.searchForm__field}>
+                                <div className={styles.searchForm__select}>
                     <select 
                         value={brand} 
                         onChange={(e) => setBrand(e.target.value)}
@@ -87,8 +104,6 @@ export default function SearchForm({years}) {
                         ))}
                     </select>
                 </div>
-            </div>
-            <div className={styles.searchForm__field}>
                 <div className={styles.searchForm__select}>
                     <select 
                         value={release} 
@@ -104,7 +119,7 @@ export default function SearchForm({years}) {
 
             </div>
             <div className={styles.searchForm__button}>
-                <button type="submit" disabled={!msName && !pilot && !series && !brand && !release}>検索</button>
+                <button type="submit" disabled={!msName && !pilot && !affiliation && !series && !brand && !release}>検索</button>
             </div>
         </form>
     );

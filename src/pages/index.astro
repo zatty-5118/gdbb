@@ -37,6 +37,14 @@ new Set(
 		.filter(Boolean)
 )).sort(); 
 
+const optionAffiliations = Array.from(
+new Set(
+	array__allArticleData
+		.map(item => item.affiliation)
+		.filter(Boolean)
+)).sort(); 
+
+
 
 const hierarchies = [];
 
@@ -161,7 +169,7 @@ const lists = [];
 		<section>
 			<div class="inner">
 				<h2>記事を検索</h2>
-				<SearchForm years={releaseYears} client:load/>
+				<SearchForm years={releaseYears} affiliations={optionAffiliations} client:load/>
 			</div>
 		</section>
 	</main>

@@ -15,23 +15,33 @@ const array__allArticleData = [];
 
 responseBlog.results.map((value) => {
     const obj = {};
-    obj["id"] = value.id;
-    obj["slug"] = value.properties.Slug.rich_text[0].text.content;
-    obj["title"] = value.properties.Title.title[0].text.content;
-    obj["thumbnail"] = value.properties.Thumbnail.files[0].file.url;
-    obj["date"] = value.properties.Date.date.start;
-    obj["series"] = value.properties.Series.multi_select[0].name;
     obj["published"] = value.properties.Published.checkbox;
-    obj["description"] = value.properties.Description.rich_text[0].text.content;
-    obj["brand"] = value.properties.Brand.multi_select[0].name;
-    obj["favorite"] = value.properties.Favorite.checkbox;
-    obj["release"] = value.properties.Release.date.start;
-    obj["pilot"] = value.properties.Pilot.rich_text[0].text.content;
-    if(obj["published"]){
-        array__allArticleData.push(obj);
+
+    try {
+        if(obj["published"]){
+            obj["id"] = value.id;
+            obj["slug"] = value.properties.Slug.rich_text[0].text.content;
+            obj["title"] = value.properties.Title.title[0].text.content;
+            obj["thumbnail"] = value.properties.Thumbnail.files[0].file.url;
+            obj["date"] = value.properties.Date.date.start;
+            obj["series"] = value.properties.Series.multi_select[0].name;
+            obj["published"] = value.properties.Published.checkbox;
+            obj["description"] = value.properties.Description.rich_text[0].text.content;
+            obj["brand"] = value.properties.Brand.multi_select[0].name;
+            obj["favorite"] = value.properties.Favorite.checkbox;
+            obj["release"] = value.properties.Release.date.start;
+            obj["pilot"] = value.properties.Pilot.rich_text[0].text.content;
+            obj["affiliation"] = value.properties.Affiliation.select.name;
+            array__allArticleData.push(obj);
+
+            array__allArticleData.sort((latest, oldest) => Date.parse(oldest.date) - Date.parse(latest.date));
+        };        
+    } catch (e) {
+        console.log(e) 
     };
 
-    array__allArticleData.sort((latest, oldest) => Date.parse(oldest.date) - Date.parse(latest.date));
+
+
 });
 
 export {notionBlog, responseBlog, array__allArticleData}

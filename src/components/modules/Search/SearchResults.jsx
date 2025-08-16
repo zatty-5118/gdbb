@@ -11,26 +11,29 @@ export default function SearchResults({ data }) {
     
     const rawMsName = params.get('msName') || '';
     const rawPilot = params.get('pilot') || '';
+    const rawAffiliation = params.get('affiliation') || '';
     const rawSeries = params.get('series') || '';
     const rawBrand = params.get('brand') || '';
     const rawRelease = params.get('release') || '';
 
     const msName = rawMsName.toLowerCase();
     const pilot = rawPilot.toLowerCase();
+    const affiliation = rawAffiliation.toLowerCase();
     const series = rawSeries.toLowerCase();
     const brand = rawBrand.toLowerCase();
     const release = rawRelease.toLowerCase();
 
-    setQuery({ msName: rawMsName,  pilot: rawPilot, series: rawSeries, brand: rawBrand, release: rawRelease });
+    setQuery({ msName: rawMsName,  pilot: rawPilot, affiliation: rawAffiliation, series: rawSeries, brand: rawBrand, release: rawRelease });
 
     if (data?.length) {
       const filtered = data.filter((post) => {
         const matchmsName = !msName || post.title?.toLowerCase().includes(msName);
         const matchPilot = !pilot || post.pilot?.toLowerCase().includes(pilot);
+        const matchAffiliation = !affiliation || post.affiliation?.toLowerCase()=== affiliation;
         const matchseries = !series || post.series?.toLowerCase() === series;
         const matchBrand = !brand || post.brand?.toLowerCase() === brand;
         const matchRelease = !release || post.release?.toLowerCase().includes(release);
-        return matchmsName &&  matchPilot && matchseries && matchBrand && matchRelease;
+        return matchmsName &&  matchPilot && matchAffiliation && matchseries && matchBrand && matchRelease;
       });
 
       setResults(filtered);
@@ -57,12 +60,12 @@ export default function SearchResults({ data }) {
       {firstLoading ? (
           <>
             <section className="firstLoadnig">
-                  <div className="spinner">
-                      <svg witdh="120" height="120" viewBox="-60 -60 120 120">
-                          <circle r="50" fill="none" stroke="red" strokeWidth="10" />
-                      </svg>
-                      <p>Loading・・・</p>
-                  </div>
+              <div className="spinner">
+                <svg witdh="120" height="120" viewBox="-60 -60 120 120">
+                  <circle r="50" fill="none" stroke="red" strokeWidth="10" />
+                </svg>
+                <p>Loading・・・</p>
+              </div>
             </section>
           </>
         ) : (
@@ -73,6 +76,7 @@ export default function SearchResults({ data }) {
                   <span className="searchWord">
                     {query.msName && <span>{query.msName}</span>}
                     {query.pilot && <span>{query.pilot}</span>}
+                    {query.affiliation && <span>{query.affiliation}</span>}
                     {query.series && <span>{seriesJa}</span>}
                     {query.brand && <span>{query.brand}</span>}
                     {query.release && <span>{query.release}年</span>}
